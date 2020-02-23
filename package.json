@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Simple vanilla JavaScript todo app",
   "main": "app.js",
-  "type": "modules",
+  "type": "module",
   "scripts": {
     "start": "node app.js"
   },
