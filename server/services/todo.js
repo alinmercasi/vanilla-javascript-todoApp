@@ -1,10 +1,10 @@
 import Todo from '../models/todo.js'
 
-const createTodo = async todo => {
-  let result = await Todo.create(todo)
-  if (!result) throw new Error('Error creating new todo')
+const createTodo = async data => {
+  let todo = await Todo.create(data)
+  if (!todo) throw new Error('Error creating new todo')
   return {
-    data: todo,
+    todo,
     message: 'Todo successfully created!',
   }
 }
@@ -25,7 +25,7 @@ const deleteTodo = async id => {
   const todo = await getTodoById(id)
   await Todo.findByIdAndDelete(todo)
   return {
-    deleted: todo,
+    todo,
     message: 'Todo successfully deleted!',
   }
 }
@@ -36,7 +36,7 @@ const updateTodo = async (id, data) => {
   })
   if (!updatedTodo) throw new Error('Error updating todo!')
   return {
-    updated: updatedTodo,
+    updatedTodo,
     message: 'Todo successfully updated!',
   }
 }

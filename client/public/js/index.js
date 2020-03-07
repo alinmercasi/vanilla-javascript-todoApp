@@ -3,27 +3,36 @@ import { getTodos, deleteTodo, createTodo, updateTodo } from './services.js'
 
 const todoList = document.querySelector('.todo-list')
 const form = document.querySelector('form')
+const messageDiv = document.getElementById('message')
+
+const showMessage = message => {
+  messageDiv.classList.remove('hidden')
+  messageDiv.textContent = message
+  setTimeout(() => {
+    messageDiv.classList.add('hidden')
+  }, 5000)
+}
 
 const deleteNode = async event => {
   event.preventDefault()
   let todo = event.target.parentNode
-  let data = JSON.parse(todo.dataset.todo)
-  let { id } = data
-  await deleteTodo(id)
+  let { id } = JSON.parse(todo.dataset.props)
+  let { message } = await deleteTodo(id)
+  showMessage(message)
   todo.parentNode.removeChild(todo)
 }
 
 const patchTodo = async event => {
   let todo = event.target.closest('.task')
-  let { id, completed } = JSON.parse(todo.dataset.todo)
+  let { id, completed } = JSON.parse(todo.dataset.props)
   if (todo && event.target.className !== 'delete-button') {
-    let { updated, message } = await updateTodo(id, {
+    let { updatedTodo, message } = await updateTodo(id, {
       completed: !completed,
     })
-    console.log(message)
-    todo.dataset.todo = JSON.stringify({
-      id: updated._id,
-      completed: updated.completed,
+    showMessage(message)
+    todo.dataset.props = JSON.stringify({
+      id: updatedTodo._id,
+      completed: updatedTodo.completed,
     })
     todo.classList.toggle('completed')
   }
@@ -33,16 +42,13 @@ const createTodoItem = todo => {
   let li = createElement('li', 'task')
   let deleteButton = createElement('button', 'delete-button')
   let todoContent = createElement('span', 'todo-content')
-  let { _id: id, completed } = todo
+  let { _id: id, completed, content } = todo
 
-  let data = JSON.stringify({ id, completed })
-
-  if (todo.completed) li.classList.add('completed')
-
-  todoContent.textContent = todo.content
+  if (completed) li.classList.add('completed')
+  todoContent.textContent = content
   deleteButton.textContent = 'Remove'
 
-  li.dataset.todo = data
+  li.dataset.props = JSON.stringify({ id, completed })
   li.append(todoContent, deleteButton)
 
   deleteButton.addEventListener('click', deleteNode)
@@ -55,7 +61,8 @@ const render = element => todoList.appendChild(element)
 
 const addTodoItem = async event => {
   event.preventDefault()
-  let { data: todo } = await createTodo({ content: form.elements[0].value })
+  let { todo, message } = await createTodo({ content: form.elements[0].value })
+  showMessage(message)
   let todoNode = createTodoItem(todo)
   render(todoNode)
 }
