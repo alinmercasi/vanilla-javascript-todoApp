@@ -23,7 +23,7 @@ const getTodoById = async id => {
 
 const deleteTodo = async id => {
   const todo = await getTodoById(id)
-  await Todo.deleteOne(todo)
+  await Todo.findByIdAndDelete(todo)
   return {
     deleted: todo,
     message: 'Todo successfully deleted!',
