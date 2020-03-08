@@ -66,7 +66,8 @@ const addTodoItem = async event => {
   let { todo, message } = await createTodo({ content: form.elements[0].value })
   showMessage(message)
   let todoNode = todoItem(todo)
-  render(todoNode)
+  render(todoNode, todoList)
+  form.reset()
 }
 
 const init = async () => {
