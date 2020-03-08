@@ -1,4 +1,4 @@
-import { createElement } from './helpers.js'
+import { createElement, setProps } from './helpers.js'
 import { getTodos, deleteTodo, createTodo, updateTodo } from './services.js'
 
 const todoList = document.querySelector('.todo-list')
@@ -26,29 +26,24 @@ const patchTodo = async event => {
   let todo = event.target.closest('.task')
   let { id, completed } = JSON.parse(todo.dataset.props)
   if (todo && event.target.className !== 'delete-button') {
-    let { updatedTodo, message } = await updateTodo(id, {
-      completed: !completed,
-    })
+    completed = !completed
+    let { message } = await updateTodo(id, { completed })
     showMessage(message)
-    todo.dataset.props = JSON.stringify({
-      id: updatedTodo._id,
-      completed: updatedTodo.completed,
-    })
+    setProps(todo, { id, completed })
     todo.classList.toggle('completed')
   }
 }
 
 const createTodoItem = todo => {
-  let li = createElement('li', 'task')
+  let { _id: id, completed, content } = todo
+  let li = createElement('li', 'task', { id, completed })
   let deleteButton = createElement('button', 'delete-button')
   let todoContent = createElement('span', 'todo-content')
-  let { _id: id, completed, content } = todo
 
   if (completed) li.classList.add('completed')
   todoContent.textContent = content
   deleteButton.textContent = 'Remove'
 
-  li.dataset.props = JSON.stringify({ id, completed })
   li.append(todoContent, deleteButton)
 
   deleteButton.addEventListener('click', deleteNode)
