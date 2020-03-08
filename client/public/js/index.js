@@ -1,4 +1,4 @@
-import { createElement, setProps } from './helpers.js'
+import { createElement, setProps, getProps, render } from './helpers.js'
 import { getTodos, deleteTodo, createTodo, updateTodo } from './services.js'
 
 const todoList = document.querySelector('.todo-list')
@@ -16,7 +16,7 @@ const showMessage = message => {
 const deleteNode = async event => {
   event.preventDefault()
   let todo = event.target.parentNode
-  let { id } = JSON.parse(todo.dataset.props)
+  let { id } = getProps(todo)
   let { message } = await deleteTodo(id)
   showMessage(message)
   todo.parentNode.removeChild(todo)
@@ -24,7 +24,7 @@ const deleteNode = async event => {
 
 const patchTodo = async event => {
   let todo = event.target.closest('.task')
-  let { id, completed } = JSON.parse(todo.dataset.props)
+  let { id, completed } = getProps(todo)
   if (todo && event.target.className !== 'delete-button') {
     completed = !completed
     let { message } = await updateTodo(id, { completed })
@@ -34,38 +34,45 @@ const patchTodo = async event => {
   }
 }
 
-const createTodoItem = todo => {
+const button = () => {
+  let buttonElement = createElement('button', 'delete-button')
+  buttonElement.textContent = 'Delete'
+  buttonElement.addEventListener('click', deleteNode)
+  return buttonElement
+}
+
+const todoContent = ({ content }) => {
+  let contentElement = createElement('span', 'todo-content', { content })
+  contentElement.textContent = content
+  return contentElement
+}
+
+const todoItem = todo => {
   let { _id: id, completed, content } = todo
-  let li = createElement('li', 'task', { id, completed })
-  let deleteButton = createElement('button', 'delete-button')
-  let todoContent = createElement('span', 'todo-content')
+  let [deleteButton, mainContent] = [button(), todoContent({ content })]
+  let li = createElement('li', 'task', { id, completed }, [
+    mainContent,
+    deleteButton,
+  ])
 
   if (completed) li.classList.add('completed')
-  todoContent.textContent = content
-  deleteButton.textContent = 'Remove'
-
-  li.append(todoContent, deleteButton)
-
-  deleteButton.addEventListener('click', deleteNode)
   li.addEventListener('click', patchTodo)
 
   return li
 }
 
-const render = element => todoList.appendChild(element)
-
 const addTodoItem = async event => {
   event.preventDefault()
   let { todo, message } = await createTodo({ content: form.elements[0].value })
   showMessage(message)
-  let todoNode = createTodoItem(todo)
+  let todoNode = todoItem(todo)
   render(todoNode)
 }
 
 const init = async () => {
   let todos = await getTodos()
-  let todoItems = todos.map(createTodoItem)
-  todoItems.map(render)
+  let todoItems = todos.map(todoItem)
+  todoItems.map(todoItem => render(todoItem, todoList))
   form.addEventListener('submit', addTodoItem)
 }
 

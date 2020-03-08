@@ -14,50 +14,16 @@ const setProps = (element, props) => {
     return { ...props }
   }
 
-const createElement = (tag, className, props) => {
+const getProps = element => JSON.parse(element.dataset.props)
+
+const createElement = (tag, className, props, children) => {
   let element = document.createElement(tag)
   if (className) element.classList.add(className)
   if (props) setProps(element, {...props})
+  if (children) children.forEach(child => element.appendChild(child))
   return element
 }
 
-// const createElement = (tag, props, state) => {
-//     let element = document.createElement(tag)
-//     if (props) setProps(element, props)
-//     return element
-//   }
+const render = (element, parent) => parent.appendChild(element)
 
-// const createTextNode = text => ({
-//   type: 'TEXT_NODE',
-//   props: {
-//     nodeValue: text,
-//   },
-//   children: [],
-// })
-
-// const component = (type, props, state, ...children) => {
-//   return {
-//     type,
-//     ...props,
-//     ...state,
-//     children: children.map(child =>
-//       isObject(child) ? child : createTextNode(child),
-//     ),
-//   }
-// }
-
-// const renderDom = (element, container) => {
-//   let domNode =
-//     element.type === 'TEXT_NODE'
-//       ? document.createTextNode('')
-//       : document.createElement(element.type)
-
-//   Object.keys(element.props).forEach(
-//     prop => (domNode[prop] = element.props[name]),
-//   )
-
-//   element.children.forEach(child => renderDom(child, domNode))
-//   container.appendChild(domNode)
-// }
-
-export { createElement, setProps }
+export { createElement, setProps, getProps, render }
