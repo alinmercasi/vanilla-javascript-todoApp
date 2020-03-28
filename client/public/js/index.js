@@ -1,4 +1,4 @@
-import { createElement, setProps, getProps, render } from './helpers.js'
+import { createElement, setProps, render } from './helpers.js'
 import { getTodos, deleteTodo, createTodo, updateTodo } from './services.js'
 
 const todoList = document.querySelector('.todo-list')
@@ -16,7 +16,7 @@ const showMessage = message => {
 const deleteNode = async event => {
   event.preventDefault()
   let todo = event.target.parentNode
-  let { id } = getProps(todo)
+  let { id } = todo
   let { message } = await deleteTodo(id)
   showMessage(message)
   todo.parentNode.removeChild(todo)
@@ -24,48 +24,40 @@ const deleteNode = async event => {
 
 const patchTodo = async event => {
   let todo = event.target.closest('.task')
-  let { id, completed } = getProps(todo)
+  let { id, completed } = todo
   if (todo && event.target.className !== 'delete-button') {
     completed = !completed
     let { message } = await updateTodo(id, { completed })
     showMessage(message)
-    setProps(todo, { id, completed })
+    setProps(todo, { completed })
     todo.classList.toggle('completed')
   }
 }
 
-const button = () => {
-  let buttonElement = createElement('button', 'delete-button')
-  buttonElement.textContent = 'Delete'
-  buttonElement.addEventListener('click', deleteNode)
-  return buttonElement
-}
+const button = () => createElement('button', {onclick: deleteNode}, 'Delete')
 
-const todoContent = ({ content }) => {
-  let contentElement = createElement('span', 'todo-content', { content })
-  contentElement.textContent = content
-  return contentElement
-}
+const todoContent = ({ content }) =>
+  createElement('span', { className: 'todo-content' }, content)
 
 const todoItem = todo => {
   let { _id: id, completed, content } = todo
   let [deleteButton, mainContent] = [button(), todoContent({ content })]
-  let li = createElement('li', 'task', { id, completed }, [
+  let li = createElement(
+    'li',
+    { id, completed, className: 'task', onclick: patchTodo },
     mainContent,
     deleteButton,
-  ])
-
+  )
   if (completed) li.classList.add('completed')
-  li.addEventListener('click', patchTodo)
-
   return li
 }
+
 
 const addTodoItem = async event => {
   event.preventDefault()
   let { todo, message } = await createTodo({ content: form.elements[0].value })
-  showMessage(message)
   let todoNode = todoItem(todo)
+  showMessage(message)
   render(todoNode, todoList)
   form.reset()
 }

@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel='stylesheet' href='./public/style.css'>
+    <link rel="stylesheet" href="./public/style.css" />
 
     <title>Simple JavScript Todo App</title>
-</head>
-<body>
-    <section class='container'>
-        <h1>Welcome to my app!</h1>
-        <form>
-            <input type='text' required />
-            <button type='submit'>Add Todo</button>
-        </form>
-        <ul class="todo-list">
-
-        </ul>
-        <div id='message' class='hidden'>
-
-        </div>
+  </head>
+  <body>
+    <section class="container">
+      <h1>Welcome to my app!</h1>
+      <form>
+        <input
+          type="text"
+          required
+          placeholder="Insert your task here..."
+          name="content"
+        />
+        <button type="submit">Add Todo</button>
+      </form>
+      <ul class="todo-list"></ul>
+      <div id="message" class="hidden"></div>
     </section>
-    
 
-    <script type='module' src='./public/js/index.js'></script>
-</body>
+    <script type="module" src="./public/js/index.js"></script>
+  </body>
 </html>
